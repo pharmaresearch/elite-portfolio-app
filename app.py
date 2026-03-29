@@ -1,5 +1,6 @@
 import yfinance as yf
 import streamlit as st
+import pandas as pd
 
 st.title("🚀 My AI Stock Dashboard")
 
@@ -13,18 +14,23 @@ stocks = {
 for name, ticker in stocks.items():
     data = yf.download(ticker, period="3mo")
 
-    # ✅ FIX: Check if data is empty
+    # Check if data exists
     if data.empty:
         st.write(f"{name}: Data not available")
         continue
 
     close = data["Close"]
 
+    # Need at least 20 values
+    if len(close) < 20:
+        st.write(f"{name}: Not enough data")
+        continue
+
     price = close.iloc[-1]
     ma20 = close.rolling(20).mean().iloc[-1]
 
-    # ✅ FIX: avoid division error
-    if ma20 == 0 or ma20 != ma20:  # handles NaN
+    # Proper NaN check (THIS FIXES ERROR)
+    if pd.isna(ma20):
         st.write(f"{name}: Data issue")
         continue
 
@@ -46,7 +52,10 @@ nifty = yf.download("^NSEI", period="3mo")
 
 if not nifty.empty:
     close = nifty["Close"]
-    if close.iloc[-1] < close.rolling(50).mean().iloc[-1]:
-        st.write("⚠️ Market Risk HIGH")
-    else:
-        st.write("✅ Market SAFE")
+    if len(close) >= 50:
+        ma50 = close.rolling(50).mean().iloc[-1]
+        if not pd.isna(ma50):
+            if close.iloc[-1] < ma50:
+                st.write("⚠️ Market Risk HIGH")
+            else:
+                st.write("✅ Market SAFE")
