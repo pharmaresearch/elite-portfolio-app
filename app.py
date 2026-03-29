@@ -38,27 +38,26 @@ stocks = {
 }
 
 for name, ticker in stocks.items():
+    st.subheader(name)
+
     try:
         data = yf.download(ticker, period="3mo")
 
-        # Check if data exists
         if data is None or data.empty:
-            st.write(f"{name}: Data not available")
+            st.write("Data not available")
             continue
 
         close = data["Close"]
 
-        # Ensure enough data
         if len(close) < 20:
-            st.write(f"{name}: Not enough data")
+            st.write("Not enough data")
             continue
 
         price = float(close.iloc[-1])
         ma20 = float(close.rolling(20).mean().iloc[-1])
 
-        # Final safety check
         if ma20 == 0:
-            st.write(f"{name}: Data issue")
+            st.write("Data issue")
             continue
 
         momentum = price / ma20
@@ -72,10 +71,14 @@ for name, ticker in stocks.items():
         else:
             signal = "⚖️ HOLD"
 
-        st.write(f"{name}: ₹{round(price,2)} → {signal}")
+        st.write(f"Price: ₹{round(price,2)}")
+        st.write(f"Signal: {signal}")
 
-    except Exception as e:
-        st.write(f"{name}: Error loading data")
+    except:
+        st.write("Error loading data")
+
+    st.markdown("---")
+
 
 # Market Risk
 try:
