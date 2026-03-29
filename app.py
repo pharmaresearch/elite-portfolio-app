@@ -4,10 +4,37 @@ import streamlit as st
 st.title("🚀 My AI Stock Dashboard")
 
 stocks = {
+    # Core
     "HDFC Bank": "HDFCBANK.NS",
     "ICICI Bank": "ICICIBANK.NS",
     "L&T": "LT.NS",
-    "Tata Power": "TATAPOWER.NS"
+    "ITC": "ITC.NS",
+
+    # Growth
+    "Tata Power": "TATAPOWER.NS",
+    "ABB India": "ABB.NS",
+    "Kalyan Jewellers": "KALYANKJIL.NS",
+    "Clean Science": "CLEAN.NS",
+
+    # High Growth / Tech
+    "KPIT Tech": "KPITTECH.NS",
+    "Dixon Tech": "DIXON.NS",
+
+    # PSU / Rail
+    "Bank of Baroda": "BANKBARODA.NS",
+    "IRFC": "IRFC.NS",
+    "IRCTC": "IRCTC.NS",
+
+    # Thematic / Risk
+    "Suzlon": "SUZLON.NS",
+    "Apollo Micro": "APOLLO.NS",
+
+    # Hidden Multibaggers
+    "Kaynes": "KAYNES.NS",
+    "Data Patterns": "DATAPATTNS.NS",
+    "Jupiter Wagons": "JWL.NS",
+    "Apar Industries": "APARINDS.NS",
+    "Syrma SGS": "SYRMA.NS"
 }
 
 for name, ticker in stocks.items():
