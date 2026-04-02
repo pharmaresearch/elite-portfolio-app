@@ -4,11 +4,11 @@ import requests
 import os
 
 # ================= TELEGRAM =================
-BOT_TOKEN = os.getenv("8512585881:AAFEDRdPE-lH70oGLgtrEHkhgBgONOLFY0Q")
-CHAT_ID = os.getenv("5522893777")
+BOT_TOKEN = os.getenv("BOT_TOKEN")
+CHAT_ID = os.getenv("CHAT_ID")
 
 def send_telegram(message):
-    url = f"https://api.telegram.org/bot8512585881:AAFEDRdPE-lH70oGLgtrEHkhgBgONOLFY0Q/sendMessage"
+    url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
     requests.post(url, data={"5522893777": CHAT_ID, "text": message})
 
 print("🚀 Running Automated Elite Engine...\n")
