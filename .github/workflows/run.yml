@@ -1,16 +1,29 @@
-name: Daily Stock Bot
+name: Elite Stock Bot
 
 on:
   schedule:
-    - cron: '30 3 * * *'   # 9:00 AM IST
+    # 9:30 AM IST → 4:00 UTC
+    - cron: '0 4 * * *'
+    # 10:30 AM IST → 5:00 UTC
+    - cron: '0 5 * * *'
+    # 12:00 PM IST → 6:30 UTC
+    - cron: '30 6 * * *'
+    # 2:00 PM IST → 8:30 UTC
+    - cron: '30 8 * * *'
+    # 3:10 PM IST → 9:40 UTC
+    - cron: '40 9 * * *'
+
   workflow_dispatch:
 
 jobs:
   run:
     runs-on: ubuntu-latest
 
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true   # ✅ Fix warning
+
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Setup Python
@@ -18,8 +31,11 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install dependencies
+      - name: Install libs
         run: pip install yfinance pandas requests
 
       - name: Run bot
         run: python bot.py
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          CHAT_ID: ${{ secrets.CHAT_ID }}
