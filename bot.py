@@ -2,6 +2,7 @@ import yfinance as yf
 import pandas as pd
 import requests
 import os
+from datetime import datetime
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 CHAT_ID = os.getenv("CHAT_ID")
@@ -12,18 +13,32 @@ def send_telegram(message):
         "chat_id": CHAT_ID,
         "text": message
     })
-    print("Telegram response:", response.text)
+    print("Telegram:", response.text)
 
 print("🚀 Bot started")
 
-# ===== MARKET =====
+# ===== TIME CHECK =====
+now = datetime.utcnow()
+
+# India time approx
+hour = now.hour + 5
+minute = now.minute + 30
+
+# Weekend check
+weekday = now.weekday()  # 5=Sat, 6=Sun
+
+# ===== MARKET STATUS =====
 market_status = "UNKNOWN"
+market_open = True
 
 try:
-    nifty = yf.download("^NSEI", period="3mo", progress=False)
-    close = nifty["Close"]
+    nifty = yf.download("^NSEI", period="5d", progress=False)
 
-    if len(close) >= 50:
+    if nifty.empty:
+        market_open = False
+    else:
+        close = nifty["Close"]
+
         price = float(close.iloc[-1])
         ma50 = float(close.rolling(50).mean().iloc[-1])
 
@@ -31,8 +46,26 @@ try:
             market_status = "⚠️ BEARISH"
         else:
             market_status = "✅ BULLISH"
-except Exception as e:
-    print("Market error:", e)
+
+except:
+    market_open = False
+
+# Weekend override
+if weekday >= 5:
+    market_open = False
+
+# ===== IF MARKET CLOSED =====
+if not market_open:
+    message = f"""
+📊 MARKET CLOSED
+
+Last Trend: {market_status}
+
+No live trading.
+System will resume next session.
+"""
+    send_telegram(message)
+    exit()
 
 # ===== STOCK LIST =====
 stocks = [
@@ -72,8 +105,8 @@ for ticker in stocks:
             "ma20": ma20
         })
 
-    except Exception as e:
-        print("Error:", ticker, e)
+    except:
+        continue
 
 df = pd.DataFrame(results)
 
@@ -98,8 +131,6 @@ Entry: {entry}
 SL: {sl}
 Target: {target}
 """
-
-print(message)
 
 send_telegram(message)
 
